@@ -41,8 +41,8 @@ Esta es la puerta de entrada al sistema. Es una capa delgada responsable de mane
 
 ## Tecnologías e Integraciones Clave
 
-* **Framework:** .NET 9
-* **Base de Datos:** Entity Framework Core (con `InMemoryDatabase` para desarrollo)
+* **Framework:** .NET 10
+* **Base de Datos:** Entity Framework Core *SQL Server*
 * **Autenticación:** JSON Web Tokens (JWT)
 * **Hashing de Contraseñas:** BCrypt.Net
 * **Mapeo de Objetos:** AutoMapper
