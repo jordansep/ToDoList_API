@@ -18,7 +18,11 @@ try
 
     // DB Context
     builder.Services.AddDbContext<AppDBContext>(options =>
-        options.UseInMemoryDatabase("ToDoListDB"));
+        options.UseSqlServer(
+            builder.Configuration.GetConnectionString("DefaultConnection")
+            )
+        );
+
 
     // AutoMapper 
     builder.Services.AddAutoMapper(cfg => cfg.AddProfile<MappingProfile>());
