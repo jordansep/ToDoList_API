@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration; // ¡AÑADE ESTE USING!
+using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;     // ¡AÑADE ESTE USING! (Para el token)
 using System.Data;
 using System.IdentityModel.Tokens.Jwt; // ¡AÑADE ESTE USING! (Para el token)

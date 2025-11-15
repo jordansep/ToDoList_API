@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ToDoList_API.Controllers;
+using ToDoList_API.DTOs.User;
 using ToDoList_Core.Domain.Implementation;
 using ToDoListAPI.DTOs.Duty;
 using ToDoListAPI.DTOs.User;

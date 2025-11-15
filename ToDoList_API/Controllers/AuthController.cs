@@ -9,6 +9,7 @@ namespace ToDoListAPI.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
+
         private readonly IAuthService _authService;
         public AuthController(IAuthService authService)
         {
@@ -24,7 +25,7 @@ namespace ToDoListAPI.Controllers
                 {
                     throw new Exception("Usuario o contraseña inválidos.");
                 }
-                return Ok();
+                return Ok(token);
             }
             catch (Exception ex) {
                 return BadRequest($"Error: {ex}");

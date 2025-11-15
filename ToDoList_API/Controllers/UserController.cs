@@ -8,11 +8,16 @@ using ToDoList_Core.Domain.Implementation;
 using ToDoList_Core.Services.Interfaces;
 using ToDoListAPI.DTOs.User;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using ToDoList_Core.Domain.Enums;
+using ToDoList_API.Authorization.RuleHandler;
 // [ApiController] activa funciones automáticas de API (como validación de modelo)
 [ApiController]
 // [Route] define cómo llegar a este controlador.
 // "api/[controller]" es un comodín que usa el nombre de la clase: "api/Users"
 [Route("api/[controller]")]
+[Authorize]
 public class UsersController : ControllerBase // Usa ControllerBase para APIs
 {
     private readonly IUserService _userService;
@@ -31,6 +36,7 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
     // [HttpPost] significa que este método responde a una petición HTTP POST.
     // El "Register" se añade a la ruta: POST /api/Users/Register
     [HttpPost("Register")]
+    [AllowAnonymous]
     public async Task<IActionResult> HttpRegisterUser([FromBody] RegisterUserDTO newUser)
     {
         try
@@ -53,12 +59,14 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
         }
     }
     [HttpGet("SearchUser")]
+    [Authorize(Roles = "Admin, Manager")]
     public async Task<ActionResult<User>> HttpSearchUser([FromQuery] string username)
     {
         try
         {
             var userFound = await _userService.FindUser(u => u.Username == username || u.Email == username );
-            if (userFound == null)
+            if (userFound
+                == null)
             {
                 return NotFound($"No se encontró ningún usuario con el nombre o email: {username}");
             }
@@ -70,6 +78,7 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
         }
     }
     [HttpPut("UpdateUser")]
+    [Authorize(Policy = "IsOwnerOrAdmin")]
     public async Task<IActionResult> HttpUpdateUserAsync(int id,[FromBody]UpdateUserNormalContentDTO user)
     {
         try
@@ -86,6 +95,7 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
         }
     }
     [HttpDelete("DeleteUser")]
+    [Authorize(Policy = "IsOwnerOrAdmin")]
     public async Task<IActionResult> HttpDeleteUserAsync(int id) {
         try
         {

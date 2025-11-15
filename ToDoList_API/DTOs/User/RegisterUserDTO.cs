@@ -5,6 +5,7 @@ namespace ToDoListAPI.DTOs.User
     public class RegisterUserDTO
     {
         [Required]
+        [MinLength (3)]
         public string Username { get; set; }
         [Required]
         public string Name { get; set; }

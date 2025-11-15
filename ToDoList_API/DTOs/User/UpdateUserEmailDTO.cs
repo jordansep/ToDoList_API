@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ToDoListAPI.DTOs.User
+namespace ToDoList_API.DTOs.User
 {
     public class UpdateUserEmailDTO
     {
