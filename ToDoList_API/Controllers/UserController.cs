@@ -1,7 +1,4 @@
-﻿// Ubicación: ToDoList.API/Controllers/UsersController.cs
-
-// Importamos los "planos" (interfaces) y "entidades" de Core
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using ToDoList_Core.Domain.Implementation;
@@ -12,17 +9,13 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using ToDoList_Core.Domain.Enums;
 using ToDoList_API.Authorization.RuleHandler;
-// [ApiController] activa funciones automáticas de API (como validación de modelo)
 [ApiController]
-// [Route] define cómo llegar a este controlador.
-// "api/[controller]" es un comodín que usa el nombre de la clase: "api/Users"
 [Route("api/[controller]")]
 [Authorize]
-public class UsersController : ControllerBase // Usa ControllerBase para APIs
+public class UsersController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IMapper _mapper;
-    // Agregamos el ILogger a la clase
     private readonly ILogger<UsersController> _logger;
 
     public UsersController(IUserService userService, IMapper mapper, ILogger<UsersController> logger)
@@ -31,10 +24,6 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
         _mapper = mapper;
         _logger = logger;
     }
-
-    // --- PASO 2: Crear los Endpoints ("Los Botones") ---
-    // [HttpPost] significa que este método responde a una petición HTTP POST.
-    // El "Register" se añade a la ruta: POST /api/Users/Register
     [HttpPost("Register")]
     [AllowAnonymous]
     public async Task<IActionResult> HttpRegisterUser([FromBody] RegisterUserDTO newUser)
@@ -46,15 +35,10 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
             await _userService.CreateUserAsync(createdUser);
 
             _logger.LogInformation("Usuario registrado: {@User}", createdUser);
-
-            // Si todo va bien, devolvemos un "200 OK" con el usuario creado.
             return Ok(createdUser);
         }
         catch (Exception ex)
         {
-            // Si el servicio lanza una excepción (ej. "el email ya existe")
-            // la capturamos y devolvemos un "400 Bad Request".
-            // (Luego mejoraremos este manejo de errores)
             return BadRequest(ex.Message);
         }
     }
@@ -109,12 +93,4 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
         }
     }
 
-    // Aquí podrías añadir tu endpoint de Login
-    // [HttpPost("Login")]
-    // public async Task<IActionResult> Login([FromBody] LoginDto login)
-    // {
-    //    var token = await _authService.LoginAsync(login.Email, login.Password);
-    //    if (token == null) return Unauthorized();
-    //    return Ok(new { Token = token });
-    // }
 }
