@@ -11,21 +11,28 @@ namespace ToDoList_API.Authorization.RuleHandler
             AuthorizationHandlerContext context,
             IsOwnerOrAdminRequirement requirement)
         {
-            if(context.User.HasClaim(ClaimTypes.Role, nameof(UserRole.Admin)))
+            var userRole = context.User.FindFirstValue(ClaimTypes.Role);
+
+            // Si es Admin, tiene acceso total
+            if (userRole == UserRole.Admin.ToString() ||
+                userRole == ((int)UserRole.Admin).ToString())
             {
                 context.Succeed(requirement);
                 return Task.CompletedTask;
             }
 
-            var userIdFromToken = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if(context.Resource is HttpContext httpContext)
+            // Si no es Admin, verificar que sea el dueño del recurso
+            if (context.Resource is HttpContext httpContext)
             {
+                var userIdFromToken = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var idFromRoute = httpContext.GetRouteValue("id")?.ToString();
-                if(userIdFromToken == idFromRoute)
+
+                if (userIdFromToken == idFromRoute)
                 {
                     context.Succeed(requirement);
                 }
             }
+
             return Task.CompletedTask;
         }
     }

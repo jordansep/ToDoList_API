@@ -29,7 +29,7 @@ namespace ToDoList_Core.Services.Implementation
             {
                 return "Contraseña incorrecta";
             } 
-            string authToken = CreateToken(new User { Id = 1, Email = user.Email, Role = user.Role});
+            string authToken = CreateToken(user);
             return authToken;
         }
 
@@ -45,28 +45,28 @@ namespace ToDoList_Core.Services.Implementation
             // ⚠️ CodeArchitect Fix: Protección contra Nulos
             // Intentamos leer del JSON. Si falla (??), usamos la clave de respaldo.
             var tokenKey = _config.GetSection("AppSettings:Token").Value
-                           ?? "esta_es_una_clave_secreta_muy_larga_para_que_jwt_no_falle_12345";
+ ?? throw new InvalidOperationException("La clave JWT no está configurada en appsettings.json");
 
             if (tokenKey.Length < 64)
             {
                 throw new ArgumentException("La clave JWT debe tener al menos 64 caracteres.");
             }
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
+          var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-            var tokenDescriptor = new SecurityTokenDescriptor
+   var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(1),
-                SigningCredentials = creds
+   Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(1),
+        SigningCredentials = creds
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return tokenHandler.WriteToken(token);
+        return tokenHandler.WriteToken(token);
         }
 
     }

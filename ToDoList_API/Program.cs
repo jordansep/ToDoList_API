@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using ToDoList_API.Authorization.Rule;
+using ToDoList_API.Authorization.RuleHandler;
+using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.OpenApi;
 
@@ -18,26 +20,23 @@ try
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(options =>
+    builder.Services.AddSwaggerGen(c =>
     {
-      options.AddSecurityDefinition(name: JwtBearerDefaults.AuthenticationScheme,
-         securityScheme: new OpenApiSecurityScheme { 
-           Name = "Authorization",
-            Description = "Enter the Bearer Authorization: ´Bearer Generated´",
-     In = ParameterLocation.Header,
-      Type = SecuritySchemeType.Http,
-       Scheme = "Bearer",
-            BearerFormat = "JWT"
-       });
-
-        options.AddSecurityRequirement(doc =>
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
         {
-   var securityRequirement = new OpenApiSecurityRequirement();
-   securityRequirement.Add(
-  new OpenApiSecuritySchemeReference(JwtBearerDefaults.AuthenticationScheme),
-    new List<string>()
-      );
-  return securityRequirement;
+            Description = "JWT Authorization header usando el esquema Bearer. Ejemplo: \"Authorization: Bearer {token}\"",
+            Name = "Authorization",
+            In = ParameterLocation.Header,
+            Type = SecuritySchemeType.ApiKey,
+            Scheme = "Bearer"
+        });
+
+        c.AddSecurityRequirement(doc =>
+        {
+            var securityScheme = new OpenApiSecuritySchemeReference("Bearer");
+            var requirement = new OpenApiSecurityRequirement();
+            requirement[securityScheme] = new List<string>();
+            return requirement;
         });
     });
 
@@ -58,26 +57,63 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IDutyService, DutyService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    
+    // Registrar el Authorization Handler
+    builder.Services.AddScoped<IAuthorizationHandler, IsOwnerOrAdminHandler>();
 
     // Configuración de Autenticación JWT
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
+            var tokenKey = builder.Configuration.GetSection("AppSettings:Token").Value
+                ?? throw new InvalidOperationException("La clave JWT no está configurada en appsettings.json");
+
+            if (tokenKey.Length < 64)
+            {
+                throw new ArgumentException("La clave JWT debe tener al menos 64 caracteres.");
+            }
+
             options.TokenValidationParameters = new TokenValidationParameters
             {
-                // Valida el broche usando la misma clave secreta
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                    builder.Configuration.GetSection("AppSettings:Token").Value
-                )),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey)),
                 ValidateIssuer = false,
-                ValidateAudience = false
+                ValidateAudience = false,
+                ClockSkew = TimeSpan.Zero
+            };
+
+            // DEBUGGING: Eventos para ver que esta pasando con el token
+            options.Events = new JwtBearerEvents
+            {
+                OnAuthenticationFailed = context =>
+                {
+                    Console.WriteLine($"[JWT ERROR] Authentication Failed: {context.Exception.Message}");
+                    return Task.CompletedTask;
+                },
+                OnTokenValidated = context =>
+                {
+                    Console.WriteLine("[JWT SUCCESS] Token validado correctamente");
+                    var claims = context.Principal?.Claims.Select(c => $"{c.Type}: {c.Value}");
+                    Console.WriteLine($"[JWT CLAIMS] {string.Join(", ", claims ?? Array.Empty<string>())}");
+                    return Task.CompletedTask;
+                },
+                OnChallenge = context =>
+                {
+                    Console.WriteLine($"[JWT CHALLENGE] Error: {context.Error}, Description: {context.ErrorDescription}");
+                    return Task.CompletedTask;
+                },
+                OnMessageReceived = context =>
+                {
+                    var authHeader = context.Request.Headers["Authorization"].FirstOrDefault();
+                    Console.WriteLine($"[JWT MESSAGE] Header: {authHeader ?? "NONE"}");
+                    return Task.CompletedTask;
+                }
             };
         });
     builder.Services.AddAuthorization(options =>
     {
         options.AddPolicy("IsOwnerOrAdmin", policy =>
-        policy.AddRequirements(new IsOwnerOrAdminRequirement())
+            policy.AddRequirements(new IsOwnerOrAdminRequirement())
         );
     });
     var app = builder.Build();

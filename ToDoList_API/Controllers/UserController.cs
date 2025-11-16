@@ -77,34 +77,35 @@ public class UsersController : ControllerBase // Usa ControllerBase para APIs
             return BadRequest(ex.Message);
         }
     }
-    [HttpPut("UpdateUser")]
+    [HttpPut("UpdateUser/{id}")]
     [Authorize(Policy = "IsOwnerOrAdmin")]
     public async Task<IActionResult> HttpUpdateUserAsync(int id,[FromBody]UpdateUserNormalContentDTO user)
     {
         try
         {
             var userToUpdate = await _userService.FindUser(u => u.Id == id);
-            if (userToUpdate == null) return BadRequest("No lo juno");
+            if (userToUpdate == null) return NotFound($"Usuario con id {id} no encontrado");
             _mapper.Map(user, userToUpdate);
             await _userService.UpdateUser(userToUpdate);
             return Ok(userToUpdate);
         }
         catch(Exception ex)
         {
-            return BadRequest("Mal ahi amigo");
+            return BadRequest($"Error al actualizar usuario: {ex.Message}");
         }
     }
-    [HttpDelete("DeleteUser")]
+    [HttpDelete("DeleteUser/{id}")]
     [Authorize(Policy = "IsOwnerOrAdmin")]
     public async Task<IActionResult> HttpDeleteUserAsync(int id) {
         try
         {
             var userToDelete = await _userService.FindUser(u => u.Id == id);
+            if (userToDelete == null) return NotFound($"Usuario con id {id} no encontrado");
             await _userService.DeleteUser(userToDelete);
             return Ok("Eliminado con exito");
         } catch (Exception ex)
         {
-            return BadRequest($"Hubo un problema: {ex}");
+            return BadRequest($"Hubo un problema: {ex.Message}");
         }
     }
 
