@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using ToDoList_Core.Domain.Implementation;
 using ToDoList_Core.Services.Interfaces;
 using ToDoListAPI.DTOs.Duty;
@@ -24,8 +25,13 @@ namespace ToDoListAPI.Controllers
         {
             try
             {
+                var userIdClaim= User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!int.TryParse(userIdClaim, out int userId))
+                {
+                    return BadRequest("ID de usuario inválido");
+                }
                 Duty dutyMapped = _mapper.Map(dutyDTO, new Duty());
-                await _dutyService.CreateDuty(dutyMapped);
+                await _dutyService.CreateDuty(dutyMapped, userId);
                 return Ok(dutyMapped);
             }
             catch (Exception ex)
@@ -34,7 +40,7 @@ namespace ToDoListAPI.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("Search/{id}")]
         public async Task<ActionResult<Duty>> HtttpSearchDuty([FromRoute] int id)
         {
             try
@@ -59,7 +65,7 @@ namespace ToDoListAPI.Controllers
                 return BadRequest($"Error: {ex}");
             }
         }
-        [HttpPut]
+        [HttpPut("Update")]
         public async Task<IActionResult> HttpUpdateDuty([FromQuery] int id, [FromBody] RegisterDutyDTO dutyDTO)
         {
             try
@@ -72,7 +78,7 @@ namespace ToDoListAPI.Controllers
                 return BadRequest($"Error: {ex}");
                 }
         }
-        [HttpDelete]
+        [HttpDelete("Delete")]
         public async Task<IActionResult> HttpDeleteDuty([FromQuery] int id)
         {
             try

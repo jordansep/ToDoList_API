@@ -1,4 +1,6 @@
-﻿using System.Linq.Expressions;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Linq.Expressions;
+using System.Security.Claims;
 using ToDoList_Core.Domain.Enums;
 using ToDoList_Core.Domain.Implementation;
 using ToDoList_Core.Domain.UseCases.Implementation;
@@ -22,11 +24,13 @@ namespace ToDoList_Core.Services.Implementation
                 HeadLine = headLine,
                 Description = description,
                 StartDate = DateTime.Now
+                
             };
         }
 
-        public async Task CreateDuty(Duty newDuty)
+        public async Task CreateDuty(Duty newDuty, int userId)
         {
+            newDuty.UserID = userId;
             _repository.Add(newDuty);
             await _unitOfWork.SaveChangesAsync();
         }
