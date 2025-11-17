@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using ToDoList_API.Extensions;
 using ToDoList_Core.Domain.Implementation;
 using ToDoList_Core.Services.Interfaces;
 using ToDoListAPI.DTOs.Duty;
@@ -11,6 +13,7 @@ namespace ToDoListAPI.Controllers
 
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class DutyController : ControllerBase
     {
         private readonly IDutyService _dutyService;
@@ -25,11 +28,7 @@ namespace ToDoListAPI.Controllers
         {
             try
             {
-                var userIdClaim= User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (!int.TryParse(userIdClaim, out int userId))
-                {
-                    return BadRequest("ID de usuario inválido");
-                }
+                int userId = User.GetUserId();
                 Duty dutyMapped = _mapper.Map(dutyDTO, new Duty());
                 await _dutyService.CreateDuty(dutyMapped, userId);
                 return Ok(dutyMapped);
@@ -41,22 +40,26 @@ namespace ToDoListAPI.Controllers
         }
 
         [HttpGet("Search/{id}")]
+        [Authorize(Policy = "IsDutyOwnerOrAdmin")]
         public async Task<ActionResult<Duty>> HtttpSearchDuty([FromRoute] int id)
         {
             try
             {
-                return await _dutyService.FindDuty(u => u.Id == id);
+                
+                return await _dutyService.FindDuty(duty => duty.Id == id);
             }
             catch (Exception) 
             {
                 return BadRequest("Error");
             }
         }
-        [HttpGet("ByUser/{userId}")]
-        public async Task<ActionResult<List<Duty>>> HttpGetAllUserDuties([FromRoute] int userId)
+        [HttpGet("ByUser")]
+        [Authorize(Policy = "IsDutyOwnerOrAdmin")]
+        public async Task<ActionResult<IEnumerable<Duty>>> HttpGetAllUserDuties()
         {
             try
             {
+                int userId = User.GetUserId();
                 var duties = await _dutyService.GetDutiesForUserAsync(userId);
                 return Ok(_mapper.Map<IEnumerable<RegisterDutyDTO>>(duties));
             }
@@ -65,12 +68,14 @@ namespace ToDoListAPI.Controllers
                 return BadRequest($"Error: {ex}");
             }
         }
-        [HttpPut("Update")]
-        public async Task<IActionResult> HttpUpdateDuty([FromQuery] int id, [FromBody] RegisterDutyDTO dutyDTO)
+        [HttpPut("Update/{id}")]
+        [Authorize(Policy = "IsDutyOwnerOrAdmin")]
+        public async Task<IActionResult> HttpUpdateDuty(int id, [FromBody] RegisterDutyDTO dutyDTO)
         {
             try
             {
                 var dutyToUpdate = await _dutyService.FindDuty(u => u.Id == id);
+                _mapper.Map(dutyDTO, dutyToUpdate);
                 await _dutyService.UpdateDutyAsync(dutyToUpdate);
                 return Ok(dutyToUpdate);
 
@@ -78,8 +83,9 @@ namespace ToDoListAPI.Controllers
                 return BadRequest($"Error: {ex}");
                 }
         }
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> HttpDeleteDuty([FromQuery] int id)
+        [HttpDelete("Delete/{id}")]
+        [Authorize(Policy = "IsDutyOwnerOrAdmin")]
+        public async Task<IActionResult> HttpDeleteDuty(int id)
         {
             try
             {

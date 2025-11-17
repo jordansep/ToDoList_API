@@ -17,6 +17,7 @@ namespace ToDoListAPI.Mapping
             CreateMap<UpdateUserEmailDTO, User>();
             // Duty Maps
             CreateMap<RegisterDutyDTO, Duty>();
+            CreateMap<Duty, RegisterDutyDTO>();
             CreateMap<ChangeDutyStatusDTO, Duty>();
         }
     }

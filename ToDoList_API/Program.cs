@@ -60,6 +60,7 @@ try
     
     // Registrar el Authorization Handler
     builder.Services.AddScoped<IAuthorizationHandler, IsOwnerOrAdminHandler>();
+    builder.Services.AddScoped<IAuthorizationHandler, IsDutyOwnerOrAdminHandler>();
 
     // Configuración de Autenticación JWT
     builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -115,7 +116,11 @@ try
         options.AddPolicy("IsOwnerOrAdmin", policy =>
             policy.AddRequirements(new IsOwnerOrAdminRequirement())
         );
+        options.AddPolicy("IsDutyOwnerOrAdmin", policy =>
+            policy.AddRequirements(new IsDutyOwnerOrAdminRequirement())
+        );
     });
+    builder.Services.AddHttpContextAccessor();
     var app = builder.Build();
 
     // --- PIPELINE DE MIDDLEWARE ---
