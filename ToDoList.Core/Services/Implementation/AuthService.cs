@@ -58,7 +58,7 @@ namespace ToDoList_Core.Services.Implementation
 
    var tokenDescriptor = new SecurityTokenDescriptor
             {
-   Subject = new ClaimsIdentity(claims),
+        Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddDays(1),
         SigningCredentials = creds
             };
