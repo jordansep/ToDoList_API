@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using ToDoList_Core.Domain.Enums;
 using ToDoList_API.Authorization.RuleHandler;
+using ToDoList_API.Extensions;
+using ToDoList.Core.Domain.UseCases.Implementation;
+using ToDoList.Core.Domain.UseCases;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -42,6 +45,7 @@ public class UsersController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     [HttpGet("SearchUser")]
     [Authorize(Roles = "Admin, Manager")]
     public async Task<ActionResult<User>> HttpSearchUser([FromQuery] string username)
@@ -61,9 +65,10 @@ public class UsersController : ControllerBase
             return BadRequest(ex.Message);
         }
     }
+
     [HttpPut("UpdateUser/{id}")]
     [Authorize(Policy = "IsOwnerOrAdmin")]
-    public async Task<IActionResult> HttpUpdateUserAsync(int id,[FromBody]UpdateUserNormalContentDTO user)
+    public async Task<IActionResult> HttpUpdateUserAsync(int id, [FromBody]UpdateUserNormalContentDTO user)
     {
         try
         {
@@ -76,6 +81,29 @@ public class UsersController : ControllerBase
         catch(Exception ex)
         {
             return BadRequest($"Error al actualizar usuario: {ex.Message}");
+        }
+    }
+
+    [HttpPut("UpdatePassword/{id}")]
+    [Authorize(Policy = "IsOwnerOrAdmin")]
+    public async Task<IActionResult> HttpUpdatePasswordAsync(
+        int id,
+        [FromBody] UpdateUserPasswordDTO userPasswords,
+        [FromServices] ChangePasswordAsync changePasswordUseCase)
+    {
+        var passwordInput = new ChangePasswordInput
+        {
+            OldPassword = userPasswords.OldPassword,
+            NewPassword = userPasswords.NewPassword
+        };
+        try
+        {
+            await changePasswordUseCase.Execute(id, passwordInput);
+            return Ok("Contraseña Actualizada");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Error al actualizar la Contraseña: {ex.Message}");
         }
     }
     [HttpDelete("DeleteUser/{id}")]
@@ -92,5 +120,4 @@ public class UsersController : ControllerBase
             return BadRequest($"Hubo un problema: {ex.Message}");
         }
     }
-
 }

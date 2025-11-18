@@ -1,13 +1,19 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using ToDoList_API.Authorization.Rule;
+using ToDoList_API.Extensions;
 using ToDoList_Core.Domain.Enums;
 
 namespace ToDoList_API.Authorization.RuleHandler
 {
     public class IsOwnerOrAdminHandler : AuthorizationHandler<IsOwnerOrAdminRequirement>
     {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public IsOwnerOrAdminHandler(IHttpContextAccessor httpContextAccessor) {
+            _httpContextAccessor = httpContextAccessor;
+        }
         protected override Task HandleRequirementAsync(
+
             AuthorizationHandlerContext context,
             IsOwnerOrAdminRequirement requirement)
         {
@@ -22,16 +28,13 @@ namespace ToDoList_API.Authorization.RuleHandler
             }
 
             // Si no es Admin, verificar que sea el dueño del recurso
-            if (context.Resource is HttpContext httpContext)
-            {
-                var userIdFromToken = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var idFromRoute = httpContext.GetRouteValue("id")?.ToString();
+                var userIdFromToken = context.User.GetUserId().ToString();
+                var idFromRoute = _httpContextAccessor.HttpContext?.GetRouteValue("id")?.ToString();
 
                 if (userIdFromToken == idFromRoute)
                 {
                     context.Succeed(requirement);
                 }
-            }
 
             return Task.CompletedTask;
         }
