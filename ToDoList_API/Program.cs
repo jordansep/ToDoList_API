@@ -11,6 +11,7 @@ using ToDoList_API.Authorization.RuleHandler;
 using Microsoft.AspNetCore.Authorization;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Microsoft.OpenApi;
+using ToDoList.Core.Domain.UseCases.Implementation;
 
 try
 {
@@ -57,6 +58,7 @@ try
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddScoped<IDutyService, DutyService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
+    builder.Services.AddScoped<ChangePasswordAsync>();
     
     // Registrar el Authorization Handler
     builder.Services.AddScoped<IAuthorizationHandler, IsOwnerOrAdminHandler>();
