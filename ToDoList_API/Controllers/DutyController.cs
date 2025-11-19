@@ -24,77 +24,48 @@ namespace ToDoListAPI.Controllers
             _mapper = mapper;
         }
         [HttpPost]
-        public async Task<IActionResult> HtttpDutyRegister([FromBody] RegisterDutyDTO dutyDTO)
+        public async Task<IActionResult> HttpDutyRegister([FromBody] RegisterDutyDTO dutyDTO)
         {
-            try
-            {
                 int userId = User.GetUserId();
                 Duty dutyMapped = _mapper.Map(dutyDTO, new Duty());
                 await _dutyService.CreateDuty(dutyMapped, userId);
                 return Ok(dutyMapped);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Hubo un error en la creacion de la tarea: {ex}");
-            }
         }
 
         [HttpGet("Search/{id}")]
         [Authorize(Policy = "IsDutyOwnerOrAdmin")]
         public async Task<ActionResult<Duty>> HtttpSearchDuty([FromRoute] int id)
         {
-            try
-            {
-                
                 return await _dutyService.FindDuty(duty => duty.Id == id);
-            }
-            catch (Exception) 
-            {
-                return BadRequest("Error");
-            }
         }
         [HttpGet("ByUser")]
         [Authorize(Policy = "IsDutyOwnerOrAdmin")]
         public async Task<ActionResult<IEnumerable<Duty>>> HttpGetAllUserDuties()
         {
-            try
-            {
+
                 int userId = User.GetUserId();
                 var duties = await _dutyService.GetDutiesForUserAsync(userId);
                 return Ok(_mapper.Map<IEnumerable<RegisterDutyDTO>>(duties));
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error: {ex}");
-            }
+
         }
         [HttpPut("Update/{id}")]
         [Authorize(Policy = "IsDutyOwnerOrAdmin")]
         public async Task<IActionResult> HttpUpdateDuty(int id, [FromBody] RegisterDutyDTO dutyDTO)
         {
-            try
-            {
                 var dutyToUpdate = await _dutyService.FindDuty(u => u.Id == id);
                 _mapper.Map(dutyDTO, dutyToUpdate);
                 await _dutyService.UpdateDutyAsync(dutyToUpdate);
                 return Ok(dutyToUpdate);
 
-            }catch (Exception ex){
-                return BadRequest($"Error: {ex}");
-                }
         }
         [HttpDelete("Delete/{id}")]
         [Authorize(Policy = "IsDutyOwnerOrAdmin")]
         public async Task<IActionResult> HttpDeleteDuty(int id)
         {
-            try
-            {
                 var dutyToDelete = await _dutyService.FindDuty(u => u.Id == id);
                 await _dutyService.DeleteDuty(dutyToDelete);
                 return Ok(dutyToDelete);
-            }catch(Exception ex){
-               return BadRequest($"Error: {ex}");
-            }
+
         }
     }
 }
