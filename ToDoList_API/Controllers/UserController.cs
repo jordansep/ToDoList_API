@@ -51,8 +51,6 @@ public class UsersController : ControllerBase
     [Authorize(Roles = "Admin, Manager")]
     public async Task<ActionResult<User>> HttpSearchUser([FromQuery] string username)
     {
-        try
-        {
             var userFound = await _userService.FindUser(u => u.Username == username || u.Email == username );
             if (userFound
                 == null)
@@ -60,29 +58,17 @@ public class UsersController : ControllerBase
                 return NotFound($"No se encontró ningún usuario con el nombre o email: {username}");
             }
             return Ok(userFound);
-        }
-        catch(Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
     }
 
     [HttpPut("UpdateUser/{id}")]
     [Authorize(Policy = "IsOwnerOrAdmin")]
     public async Task<IActionResult> HttpUpdateUserAsync(int id, [FromBody]UpdateUserNormalContentDTO user)
     {
-        try
-        {
             var userToUpdate = await _userService.FindUser(u => u.Id == id);
             if (userToUpdate == null) return NotFound($"Usuario con id {id} no encontrado");
             _mapper.Map(user, userToUpdate);
             await _userService.UpdateUser(userToUpdate);
             return Ok(userToUpdate);
-        }
-        catch(Exception ex)
-        {
-            return BadRequest($"Error al actualizar usuario: {ex.Message}");
-        }
     }
 
     [HttpPut("UpdatePassword/{id}")]
@@ -92,20 +78,10 @@ public class UsersController : ControllerBase
         [FromBody] UpdateUserPasswordDTO userPasswords,
         [FromServices] ChangePasswordAsync changePasswordUseCase)
     {
-        var passwordInput = new ChangePasswordInput
-        {
-            OldPassword = userPasswords.OldPassword,
-            NewPassword = userPasswords.NewPassword
-        };
-        try
-        {
+        
+            var passwordInput = _mapper.Map(userPasswords, new ChangePasswordInput());
             await changePasswordUseCase.Execute(id, passwordInput);
             return Ok("Contraseña Actualizada");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error al actualizar la Contraseña: {ex.Message}");
-        }
     }
 
     [HttpPut("UpdateEmail/{id}")]
@@ -116,33 +92,17 @@ public class UsersController : ControllerBase
         [FromServices] ChangeUserEmailAsync changeEmailUseCase
         )
     {
-        var newEmail = new ChangeEmailInput
-        {
-            NewEmail = userEmails.NewEmail,
-            Password = userEmails.Password,
-        };
-        try
-        {
+            var newEmail = _mapper.Map(userEmails, new ChangeEmailInput());
             await changeEmailUseCase.Execute(id, newEmail);
             return Ok("Email actualizado con exito");
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Hubo un problema: {ex.Message}");
-        }
     }
     [HttpDelete("DeleteUser/{id}")]
     [Authorize(Policy = "IsOwnerOrAdmin")]
     public async Task<IActionResult> HttpDeleteUserAsync(int id) {
-        try
-        {
             var userToDelete = await _userService.FindUser(u => u.Id == id);
             if (userToDelete == null) return NotFound($"Usuario con id {id} no encontrado");
             await _userService.DeleteUser(userToDelete);
             return Ok("Eliminado con exito");
-        } catch (Exception ex)
-        {
-            return BadRequest($"Hubo un problema: {ex.Message}");
-        }
+
     }
 }

@@ -1,17 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Text;
+using ToDoList.Core.Domain.UseCases.Implementation;
+using ToDoList_API.Authorization.Rule;
+using ToDoList_API.Authorization.RuleHandler;
 using ToDoList_Core.Services.Implementation;
 using ToDoList_Core.Services.Interfaces;
 using ToDoList_Infrastructure.Server.Implementation;
 using ToDoListAPI.Mapping;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using ToDoList_API.Authorization.Rule;
-using ToDoList_API.Authorization.RuleHandler;
-using Microsoft.AspNetCore.Authorization;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using Microsoft.OpenApi;
-using ToDoList.Core.Domain.UseCases.Implementation;
+using ToDoListAPI.Middlewares;
 
 try
 {
@@ -60,7 +61,12 @@ try
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ChangePasswordAsync>();
     builder.Services.AddScoped<ChangeUserEmailAsync>();
-    
+
+    // MiddleWare
+
+    builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+    builder.Services.AddProblemDetails();
+
     // Registrar el Authorization Handler
     builder.Services.AddScoped<IAuthorizationHandler, IsOwnerOrAdminHandler>();
     builder.Services.AddScoped<IAuthorizationHandler, IsDutyOwnerOrAdminHandler>();
@@ -133,6 +139,8 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
+    app.UseExceptionHandler();
 
     app.UseHttpsRedirection();
 
