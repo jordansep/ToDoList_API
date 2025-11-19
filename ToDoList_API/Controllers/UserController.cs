@@ -12,6 +12,7 @@ using ToDoList_API.Authorization.RuleHandler;
 using ToDoList_API.Extensions;
 using ToDoList.Core.Domain.UseCases.Implementation;
 using ToDoList.Core.Domain.UseCases;
+using ToDoList_API.DTOs.User;
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
@@ -104,6 +105,30 @@ public class UsersController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest($"Error al actualizar la Contraseña: {ex.Message}");
+        }
+    }
+
+    [HttpPut("UpdateEmail/{id}")]
+    [Authorize(Policy = "IsOwnerOrAdmin")]
+    public async Task<IActionResult> HttpUpdateEmailAsync(
+        int id,
+        [FromBody] UpdateUserEmailDTO userEmails,
+        [FromServices] ChangeUserEmailAsync changeEmailUseCase
+        )
+    {
+        var newEmail = new ChangeEmailInput
+        {
+            NewEmail = userEmails.NewEmail,
+            Password = userEmails.Password,
+        };
+        try
+        {
+            await changeEmailUseCase.Execute(id, newEmail);
+            return Ok("Email actualizado con exito");
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Hubo un problema: {ex.Message}");
         }
     }
     [HttpDelete("DeleteUser/{id}")]

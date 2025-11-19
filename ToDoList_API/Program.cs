@@ -59,6 +59,7 @@ try
     builder.Services.AddScoped<IDutyService, DutyService>();
     builder.Services.AddScoped<IAuthService, AuthService>();
     builder.Services.AddScoped<ChangePasswordAsync>();
+    builder.Services.AddScoped<ChangeUserEmailAsync>();
     
     // Registrar el Authorization Handler
     builder.Services.AddScoped<IAuthorizationHandler, IsOwnerOrAdminHandler>();

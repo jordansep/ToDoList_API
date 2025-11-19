@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using ToDoList.Core.Domain.UseCases;
+using ToDoList.Core.Domain.UseCases.Implementation;
 using ToDoList_API.Controllers;
 using ToDoList_API.DTOs.User;
 using ToDoList_Core.Domain.Implementation;
@@ -19,6 +21,8 @@ namespace ToDoListAPI.Mapping
             CreateMap<RegisterDutyDTO, Duty>();
             CreateMap<Duty, RegisterDutyDTO>();
             CreateMap<ChangeDutyStatusDTO, Duty>();
+            CreateMap<UpdateUserPasswordDTO, ChangePasswordAsync>();
+            CreateMap<UpdateUserEmailDTO, ChangeEmailInput>();
         }
     }
 }

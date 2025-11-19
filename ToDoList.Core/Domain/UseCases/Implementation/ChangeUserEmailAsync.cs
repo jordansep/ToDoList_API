@@ -6,28 +6,32 @@ using ToDoList_Core.Services.Interfaces;
 
 namespace ToDoList.Core.Domain.UseCases.Implementation
 {
-    public class ChangePasswordAsync
+    public class ChangeUserEmailAsync
     {
         private readonly IRepository<User> _repository;
         private readonly IUnitOfWork _unitOfWork;
-        public ChangePasswordAsync(
+        public ChangeUserEmailAsync(
             IRepository<User> repository,
             IUnitOfWork unitOfWork)
         {
             _repository = repository;
             _unitOfWork = unitOfWork;
         }
-        public async Task Execute(int userId, ChangePasswordInput inputPassword)
+        public async Task Execute(int userId, ChangeEmailInput input)
         {
             var user = await _repository.FindAsync(u => u.Id == userId);
             if (user == null) throw new KeyNotFoundException("Usuario no encontrado");
-            if (!BCrypt.Net.BCrypt.EnhancedVerify(inputPassword.OldPassword, user.PasswordHash)) { 
-                throw new KeyNotFoundException("La Contraseña anterior es incorrecta");
+            if (!BCrypt.Net.BCrypt.EnhancedVerify(input.Password, user.PasswordHash))
+            {
+                throw new UnauthorizedAccessException("La contraseña no coincide");
             }
-            string newPasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(inputPassword.NewPassword);
-            user.PasswordHash = newPasswordHash;
+            var emailTaken  = await _repository.FindAsync(u => u.Email == input.NewEmail);
+            if (emailTaken != null) throw new InvalidOperationException("El Email ya esta en uso");
+            user.Email = input.NewEmail;
             _repository.Update(user);
             await _unitOfWork.SaveChangesAsync();
+
+
         }
     }
 }
