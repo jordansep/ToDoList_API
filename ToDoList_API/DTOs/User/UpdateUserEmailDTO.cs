@@ -5,7 +5,7 @@ namespace ToDoList_API.DTOs.User
     public class UpdateUserEmailDTO
     {
         [Required]
-        public string Email { get; set; }
+        public string NewEmail { get; set; }
         [Required]
         public string Password { get; set; }
     }
