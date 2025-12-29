@@ -28,7 +28,7 @@ namespace ToDoList_Core.Domain.Implementation
         public string PasswordHash { get; set; }
         public List<Duty> Duties { get; set; }
         public UserRole Role { get; set; }
-        public DateTime UserCreatedDate { get; set; }
+        public DateTime UserCreatedDate { get; set; } = DateTime.Now;
         public User() {
             Duties = new List<Duty>();
             Role = 0;

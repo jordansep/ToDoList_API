@@ -21,8 +21,8 @@ namespace ToDoList.Core.Domain.UseCases.Implementation
         {
             var user = await _repository.FindAsync(u => u.Id == userId);
             if (user == null) throw new KeyNotFoundException("Usuario no encontrado");
-            if (!BCrypt.Net.BCrypt.EnhancedVerify(inputPassword.OldPassword, user.PasswordHash)) { 
-                throw new KeyNotFoundException("La Contraseña anterior es incorrecta");
+            if (!BCrypt.Net.BCrypt.EnhancedVerify(inputPassword.OldPassword, user.PasswordHash)) {
+                throw new UnauthorizedAccessException("La Contraseña anterior es incorrecta");
             }
             string newPasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(inputPassword.NewPassword);
             user.PasswordHash = newPasswordHash;

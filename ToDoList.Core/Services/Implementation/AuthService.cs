@@ -45,14 +45,14 @@ namespace ToDoList_Core.Services.Implementation
             // ⚠️ CodeArchitect Fix: Protección contra Nulos
             // Intentamos leer del JSON. Si falla (??), usamos la clave de respaldo.
             var tokenKey = _config.GetSection("AppSettings:Token").Value
- ?? throw new InvalidOperationException("La clave JWT no está configurada en appsettings.json");
+             ?? throw new InvalidOperationException("La clave JWT no está configurada en appsettings.json");
 
-            if (tokenKey.Length < 64)
+            if (string.IsNullOrEmpty(tokenKey) || tokenKey.Length < 64)
             {
                 throw new ArgumentException("La clave JWT debe tener al menos 64 caracteres.");
             }
 
-          var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

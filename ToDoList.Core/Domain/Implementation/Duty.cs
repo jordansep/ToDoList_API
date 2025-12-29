@@ -16,11 +16,12 @@ namespace ToDoList_Core.Domain.Implementation
         public string Description {  get; set; }
         [Required]
         public DutyStatus Status { get; set; }
-        public DateTime FinishDate { get; set; }
-        [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime? FinishDate { get; set; }
+        public DateTime? StartDate { get; set; }
         public int UserID { get; set; }
         public User User {  get; set; }
+        [Required]
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
         public Duty() { }
         public string ReadDescription(string description)
         {
