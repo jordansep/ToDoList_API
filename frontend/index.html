@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow — NovaTech</title>
+  <meta name="description" content="Gestiona tus tareas de manera ágil y eficiente con TaskFlow. Una interfaz moderna, intuitiva y optimizada para tu productividad diaria.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Animated Gradients -->
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
+
+  <!-- Loading Overlay -->
+  <div id="global-loader" class="loader-overlay hidden">
+    <div class="spinner"></div>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Navigation / Header -->
+  <header class="app-header">
+    <div class="header-logo">
+      <div class="logo-icon"><i class="fa-solid fa-list-check"></i></div>
+      <span class="logo-text">Task<span>Flow</span></span>
+    </div>
+    
+    <!-- Header Controls (Visible when Logged In) -->
+    <div id="header-user-controls" class="header-user-controls hidden">
+      <div class="user-badge" id="user-profile-trigger">
+        <div class="user-avatar" id="user-avatar-initials">U</div>
+        <div class="user-info-text">
+          <span class="user-display-name" id="user-display-name">Usuario</span>
+          <span class="user-display-role" id="user-display-role">Normal</span>
+        </div>
+        <i class="fa-solid fa-chevron-down user-chevron"></i>
+      </div>
+      
+      <!-- Dropdown Menu -->
+      <div class="user-dropdown" id="user-dropdown-menu">
+        <button id="btn-open-profile" class="dropdown-item">
+          <i class="fa-solid fa-user-gear"></i> Mi Perfil
+        </button>
+        <div class="dropdown-divider"></div>
+        <button id="btn-logout" class="dropdown-item logout-item">
+          <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    
+    <!-- VIEW 1: AUTHENTICATION SCREEN -->
+    <section id="view-auth" class="auth-section">
+      <div class="auth-card">
+        <!-- Tabs for Switching -->
+        <div class="auth-tabs">
+          <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Iniciar Sesión</button>
+          <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Registrarse</button>
+        </div>
+        
+        <!-- Login Form -->
+        <form id="form-login" class="auth-form active-form">
+          <div class="form-header">
+            <h2>¡Hola de nuevo!</h2>
+            <p>Ingresa tus credenciales para acceder a tus tareas.</p>
+          </div>
+          <div class="input-group">
+            <label for="login-username"><i class="fa-solid fa-user"></i> Usuario</label>
+            <input type="text" id="login-username" placeholder="Tu nombre de usuario" required minlength="3">
+          </div>
+          <div class="input-group">
+            <label for="login-password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+            <input type="password" id="login-password" placeholder="Tu contraseña" required minlength="6">
+          </div>
+          <button type="submit" id="login-submit-btn" class="btn btn-primary btn-block">
+            <span>Ingresar</span> <i class="fa-solid fa-arrow-right-to-bracket"></i>
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="form-register" class="auth-form hidden-form">
+          <div class="form-header">
+            <h2>Crear Cuenta</h2>
+            <p>Completa el formulario para registrarte en TaskFlow.</p>
+          </div>
+          <div class="form-row">
+            <div class="input-group">
+              <label for="register-name"><i class="fa-solid fa-font"></i> Nombre</label>
+              <input type="text" id="register-name" placeholder="Tu nombre" required>
+            </div>
+            <div class="input-group">
+              <label for="register-lastname"><i class="fa-solid fa-font"></i> Apellido</label>
+              <input type="text" id="register-lastname" placeholder="Tu apellido" required>
+            </div>
+          </div>
+          <div class="input-group">
+            <label for="register-username"><i class="fa-solid fa-user-tag"></i> Usuario</label>
+            <input type="text" id="register-username" placeholder="Nombre de usuario" required minlength="3">
+          </div>
+          <div class="input-group">
+            <label for="register-email"><i class="fa-solid fa-envelope"></i> Email</label>
+            <input type="email" id="register-email" placeholder="correo@ejemplo.com" required>
+          </div>
+          <div class="input-group">
+            <label for="register-password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+            <input type="password" id="register-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+          </div>
+          <button type="submit" id="register-submit-btn" class="btn btn-secondary btn-block">
+            <span>Registrarme</span> <i class="fa-solid fa-user-plus"></i>
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- VIEW 2: DASHBOARD BOARD SCREEN -->
+    <section id="view-dashboard" class="dashboard-section hidden">
+      <div class="dashboard-header-bar">
+        <div class="welcome-box">
+          <h1 id="dashboard-welcome-msg">Bienvenido</h1>
+          <p>Organiza, actualiza y completa tus tareas pendientes.</p>
+        </div>
+        <button id="btn-add-task" class="btn btn-primary shadow-glow">
+          <i class="fa-solid fa-plus"></i> Nueva Tarea
+        </button>
+      </div>
+
+      <!-- Search and Filter (Bonus Aesthetic Feature) -->
+      <div class="dashboard-filter-bar">
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="task-search-input" placeholder="Buscar por título o descripción...">
+        </div>
+        <div class="stats-overview">
+          <span class="stat-badge"><i class="fa-solid fa-hourglass-start color-todo"></i> Pendientes: <b id="stat-todo-count">0</b></span>
+          <span class="stat-badge"><i class="fa-solid fa-spinner color-process"></i> En Proceso: <b id="stat-process-count">0</b></span>
+          <span class="stat-badge"><i class="fa-solid fa-circle-check color-done"></i> Completadas: <b id="stat-done-count">0</b></span>
+        </div>
+      </div>
+
+      <!-- Kanban Board -->
+      <div class="kanban-board">
+        
+        <!-- Column: To Do -->
+        <div class="kanban-column" id="col-todo">
+          <div class="column-header border-todo">
+            <div class="column-title">
+              <i class="fa-solid fa-circle-exclamation color-todo"></i>
+              <h3>Pendientes</h3>
+            </div>
+            <span class="column-count" id="count-todo">0</span>
+          </div>
+          <div class="column-tasks" id="tasks-todo">
+            <!-- Dynamic task cards loaded via Javascript -->
+          </div>
+        </div>
+
+        <!-- Column: In Process -->
+        <div class="kanban-column" id="col-process">
+          <div class="column-header border-process">
+            <div class="column-title">
+              <i class="fa-solid fa-arrows-spin color-process animated-spin"></i>
+              <h3>En Proceso</h3>
+            </div>
+            <span class="column-count" id="count-process">0</span>
+          </div>
+          <div class="column-tasks" id="tasks-process">
+            <!-- Dynamic task cards loaded via Javascript -->
+          </div>
+        </div>
+
+        <!-- Column: Finished -->
+        <div class="kanban-column" id="col-finished">
+          <div class="column-header border-done">
+            <div class="column-title">
+              <i class="fa-solid fa-circle-check color-done"></i>
+              <h3>Completadas</h3>
+            </div>
+            <span class="column-count" id="count-finished">0</span>
+          </div>
+          <div class="column-tasks" id="tasks-finished">
+            <!-- Dynamic task cards loaded via Javascript -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- MODAL: ADD / EDIT TASK -->
+  <div id="modal-task" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-task-title">Nueva Tarea</h3>
+        <button id="btn-close-task-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="form-task" class="modal-form">
+        <input type="hidden" id="task-id">
+        <div class="input-group">
+          <label for="task-headline">Título de la Tarea <span class="required-star">*</span></label>
+          <input type="text" id="task-headline" placeholder="Escribe el título" required>
+        </div>
+        <div class="input-group">
+          <label for="task-description">Descripción</label>
+          <textarea id="task-description" placeholder="Detalles de la tarea..." rows="4"></textarea>
+        </div>
+        <div class="form-row">
+          <div class="input-group">
+            <label for="task-start-date">Fecha de Inicio</label>
+            <input type="datetime-local" id="task-start-date">
+          </div>
+          <div class="input-group">
+            <label for="task-finish-date">Fecha de Finalización</label>
+            <input type="datetime-local" id="task-finish-date">
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="btn-cancel-task" class="btn btn-text">Cancelar</button>
+          <button type="submit" id="btn-save-task" class="btn btn-primary">Guardar Tarea</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PROFILE & ACCOUNT CONFIG -->
+  <div id="modal-profile" class="modal-overlay hidden">
+    <div class="modal-card modal-profile-card">
+      <div class="modal-header">
+        <h3>Configuración de Cuenta</h3>
+        <button id="btn-close-profile-modal" class="btn-close-modal"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      
+      <div class="modal-tabs">
+        <button id="profile-tab-email" class="profile-tab active" onclick="switchProfileTab('email')">Actualizar Email</button>
+        <button id="profile-tab-password" class="profile-tab" onclick="switchProfileTab('password')">Cambiar Contraseña</button>
+        <button id="profile-tab-server" class="profile-tab" onclick="switchProfileTab('server')">Servidor API</button>
+      </div>
+
+      <!-- Update Email Form -->
+      <form id="form-update-email" class="modal-form profile-form active-form">
+        <div class="input-group">
+          <label for="profile-new-email">Nuevo Correo Electrónico</label>
+          <input type="email" id="profile-new-email" placeholder="nuevo_correo@ejemplo.com" required>
+        </div>
+        <div class="input-group">
+          <label for="profile-new-email-confirm">Confirmar Correo Electrónico</label>
+          <input type="email" id="profile-new-email-confirm" placeholder="Confirma tu nuevo correo" required>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary btn-block">Actualizar Email</button>
+        </div>
+      </form>
+
+      <!-- Update Password Form -->
+      <form id="form-update-password" class="modal-form profile-form hidden-form">
+        <div class="input-group">
+          <label for="profile-current-password">Contraseña Actual</label>
+          <input type="password" id="profile-current-password" placeholder="Ingresa tu contraseña actual" required minlength="6">
+        </div>
+        <div class="input-group">
+          <label for="profile-new-password">Nueva Contraseña</label>
+          <input type="password" id="profile-new-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+        </div>
+        <div class="input-group">
+          <label for="profile-new-password-confirm">Confirmar Nueva Contraseña</label>
+          <input type="password" id="profile-new-password-confirm" placeholder="Confirma tu nueva contraseña" required minlength="6">
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-secondary btn-block">Actualizar Contraseña</button>
+        </div>
+      </form>
+
+      <!-- Update API URL Form -->
+      <form id="form-update-server" class="modal-form profile-form hidden-form">
+        <div class="input-group">
+          <label for="profile-api-url"><i class="fa-solid fa-server"></i> URL del Backend API</label>
+          <input type="url" id="profile-api-url" placeholder="https://tu-backend-api.onrender.com" required>
+          <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 4px;">
+            Introduce la URL del backend donde se ejecuta la API. Al guardar, la página se recargará para aplicar los cambios.
+          </small>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-primary btn-block">Guardar y Recargar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>

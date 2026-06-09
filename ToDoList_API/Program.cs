@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -19,6 +19,16 @@ try
     var builder = WebApplication.CreateBuilder(args);
 
     // --- ZONA DE REGISTRO DE SERVICIOS (DI) ---
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("AllowAll", policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+    });
 
     builder.Services.AddControllers();
     builder.Services.AddEndpointsApiExplorer();
@@ -42,9 +52,9 @@ try
         });
     });
 
-    // DB Context
+    // DB Context (PostgreSQL)
     builder.Services.AddDbContext<AppDBContext>(options =>
-        options.UseSqlServer(
+        options.UseNpgsql(
             builder.Configuration.GetConnectionString("DefaultConnection")
             )
         );
@@ -132,6 +142,21 @@ try
     builder.Services.AddHttpContextAccessor();
     var app = builder.Build();
 
+    // Migraciones automáticas de base de datos
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+        try
+        {
+            await dbContext.Database.MigrateAsync();
+            Console.WriteLine("[Database] PostgreSQL Migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Database Error] Could not apply migrations on startup: {ex.Message}");
+        }
+    }
+
     // --- PIPELINE DE MIDDLEWARE ---
 
     if (app.Environment.IsDevelopment())
@@ -143,6 +168,8 @@ try
     app.UseExceptionHandler();
 
     app.UseHttpsRedirection();
+
+    app.UseCors("AllowAll");
 
     app.UseAuthentication();
     app.UseAuthorization();

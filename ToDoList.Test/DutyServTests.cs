@@ -1,4 +1,4 @@
-﻿using Moq;
+using Moq;
 using System.Linq.Expressions;
 using ToDoList_Core.Domain.Enums;
 using ToDoList_Core.Domain.Implementation;
@@ -164,7 +164,7 @@ namespace ToDoList.Tests
             Assert.Equal(title, result.HeadLine);
             Assert.Equal(desc, result.Description);
             // Verificamos que la fecha de inicio sea "ahora" (con margen de 1 segundo)
-            Assert.True((DateTime.Now - result.StartDate).TotalSeconds < 1);
+            Assert.True((DateTime.Now - result.StartDate.Value).TotalSeconds < 1);
         }
 
         // --- TEST 9: ERROR DE BASE DE DATOS (EN GUARDADO) ---
