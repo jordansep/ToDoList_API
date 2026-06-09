@@ -1,0 +1,16 @@
+databases:
+  - name: todolist-db
+    databaseName: ToDoListDB
+    user: postgres
+    plan: free
+
+services:
+  - type: web
+    name: todolist-api-production
+    env: docker
+    plan: free
+    envVars:
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: todolist-db
+          property: connectionString
