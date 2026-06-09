@@ -1,7 +1,7 @@
 databases:
   - name: todolist-db
-    databaseName: ToDoListDB
-    user: postgres
+    databaseName: todolistdb
+    user: todolistuser
     plan: free
 
 services:
