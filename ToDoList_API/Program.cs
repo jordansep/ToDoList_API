@@ -53,11 +53,19 @@ try
     });
 
     // DB Context (PostgreSQL)
+    var connUrl = builder.Configuration.GetConnectionString("DefaultConnection");
+    
+    // Parsear la URL si viene en formato postgres:// (como en Render)
+    if (!string.IsNullOrEmpty(connUrl) && connUrl.StartsWith("postgres://"))
+    {
+        var uri = new Uri(connUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        connUrl = $"Host={uri.Host};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Port={(uri.Port > 0 ? uri.Port : 5432)};SSL Mode=Require;Trust Server Certificate=true;";
+    }
+
     builder.Services.AddDbContext<AppDBContext>(options =>
-        options.UseNpgsql(
-            builder.Configuration.GetConnectionString("DefaultConnection")
-            )
-        );
+        options.UseNpgsql(connUrl)
+    );
 
 
     // AutoMapper 
