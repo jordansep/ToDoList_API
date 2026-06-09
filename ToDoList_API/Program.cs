@@ -55,8 +55,8 @@ try
     // DB Context (PostgreSQL)
     var connUrl = builder.Configuration.GetConnectionString("DefaultConnection");
     
-    // Parsear la URL si viene en formato postgres:// (como en Render)
-    if (!string.IsNullOrEmpty(connUrl) && connUrl.StartsWith("postgres://"))
+    // Parsear la URL si viene en formato postgres:// o postgresql:// (como en Render)
+    if (!string.IsNullOrEmpty(connUrl) && (connUrl.StartsWith("postgres://") || connUrl.StartsWith("postgresql://")))
     {
         var uri = new Uri(connUrl);
         var userInfo = uri.UserInfo.Split(':');
