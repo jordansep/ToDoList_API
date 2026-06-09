@@ -56,11 +56,15 @@ try
     var connUrl = builder.Configuration.GetConnectionString("DefaultConnection");
     
     // Parsear la URL si viene en formato postgres:// o postgresql:// (como en Render)
-    if (!string.IsNullOrEmpty(connUrl) && (connUrl.StartsWith("postgres://") || connUrl.StartsWith("postgresql://")))
+    if (!string.IsNullOrEmpty(connUrl))
     {
-        var uri = new Uri(connUrl);
-        var userInfo = uri.UserInfo.Split(':');
-        connUrl = $"Host={uri.Host};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Port={(uri.Port > 0 ? uri.Port : 5432)};SSL Mode=Require;Trust Server Certificate=true;";
+        connUrl = connUrl.Trim('"', '\'');
+        if (connUrl.StartsWith("postgres://") || connUrl.StartsWith("postgresql://"))
+        {
+            var uri = new Uri(connUrl);
+            var userInfo = uri.UserInfo.Split(':');
+            connUrl = $"Host={uri.Host};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};Port={(uri.Port > 0 ? uri.Port : 5432)};SSL Mode=Require;Trust Server Certificate=true;";
+        }
     }
 
     builder.Services.AddDbContext<AppDBContext>(options =>
