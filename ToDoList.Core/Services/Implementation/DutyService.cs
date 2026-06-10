@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using ToDoList_Core.Domain.Enums;
@@ -23,7 +23,7 @@ namespace ToDoList_Core.Services.Implementation
             return new Duty {
                 HeadLine = headLine,
                 Description = description,
-                StartDate = DateTime.Now
+                StartDate = DateTime.UtcNow
                 
             };
         }

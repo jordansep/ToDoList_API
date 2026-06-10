@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ToDoList_Core.Domain.Enums;
 using ToDoList_Core.Domain.Interfaces;
@@ -21,7 +21,7 @@ namespace ToDoList_Core.Domain.Implementation
         public int UserID { get; set; }
         public User User {  get; set; }
         [Required]
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public Duty() { }
         public string ReadDescription(string description)
         {

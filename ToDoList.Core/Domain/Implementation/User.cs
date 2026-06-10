@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,7 +28,7 @@ namespace ToDoList_Core.Domain.Implementation
         public string PasswordHash { get; set; }
         public List<Duty> Duties { get; set; }
         public UserRole Role { get; set; }
-        public DateTime UserCreatedDate { get; set; } = DateTime.Now;
+        public DateTime UserCreatedDate { get; set; } = DateTime.UtcNow;
         public User() {
             Duties = new List<Duty>();
             Role = 0;
