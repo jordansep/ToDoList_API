@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -39,7 +39,6 @@ namespace ToDoListAPI.Controllers
                 return await _dutyService.FindDuty(duty => duty.Id == id);
         }
         [HttpGet("ByUser")]
-        [Authorize(Policy = "IsDutyOwnerOrAdmin")]
         public async Task<ActionResult<IEnumerable<Duty>>> HttpGetAllUserDuties()
         {
 
