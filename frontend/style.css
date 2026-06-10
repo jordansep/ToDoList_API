@@ -6,6 +6,57 @@
   --font-heading: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
+  /* HSL Color Palette (Light Theme Default) */
+  --bg-deep: hsl(210, 40%, 98%);
+  --bg-card: hsla(0, 0%, 100%, 0.9);
+  --bg-card-hover: hsla(210, 40%, 96%, 0.95);
+  --bg-header: hsla(210, 40%, 98%, 0.9);
+  --bg-input: hsl(0, 0%, 100%);
+  --bg-input-focus: hsl(210, 40%, 96%);
+  
+  /* Text Colors */
+  --text-main: hsl(222, 47%, 15%);
+  --text-muted: hsl(215, 16%, 45%);
+  --text-inverse: hsl(0, 0%, 100%);
+
+  /* State Colors (Cyan, Amber, Emerald) */
+  --color-todo: hsl(199, 89%, 40%);
+  --color-todo-bg: hsla(199, 89%, 48%, 0.1);
+  
+  --color-process: hsl(38, 92%, 45%);
+  --color-process-bg: hsla(38, 92%, 50%, 0.1);
+  
+  --color-done: hsl(150, 84%, 30%);
+  --color-done-bg: hsla(150, 84%, 37%, 0.1);
+
+  --color-primary: hsl(258, 90%, 60%);
+  --color-primary-hover: hsl(258, 90%, 55%);
+  --color-primary-glow: hsla(258, 90%, 66%, 0.2);
+
+  --color-secondary: hsl(172, 66%, 40%);
+  --color-secondary-hover: hsl(172, 66%, 35%);
+  --color-secondary-glow: hsla(172, 66%, 50%, 0.2);
+
+  --color-danger: hsl(342, 75%, 45%);
+  --color-danger-bg: hsla(342, 75%, 50%, 0.1);
+
+  /* Borders & Shadows */
+  --border-color: hsla(217, 32%, 20%, 0.15);
+  --border-focus: hsl(258, 90%, 66%);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] {
   /* HSL Color Palette (Harmonious Dark Theme) */
   --bg-deep: hsl(222, 47%, 6%);
   --bg-card: hsla(217, 33%, 12%, 0.75);
@@ -42,18 +93,9 @@
 
   /* Borders & Shadows */
   --border-color: hsla(217, 32%, 20%, 0.5);
-  --border-focus: hsl(258, 90%, 66%);
   --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
   --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.5);
   --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --radius-pill: 9999px;
-  
-  /* Transitions */
-  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ==========================================================================
@@ -73,6 +115,7 @@ body {
   overflow-x: hidden;
   position: relative;
   line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Scrollbars */
@@ -210,17 +253,42 @@ p {
 .app-header {
   position: sticky;
   top: 0;
-  width: 100%;
-  height: 72px;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: var(--bg-header);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.header-right-controls {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 2rem;
-  background-color: var(--bg-header);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-color);
-  z-index: 100;
+  gap: 1.5rem;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--bg-card-hover);
+  color: var(--color-primary);
+  transform: scale(1.1);
 }
 
 .header-logo {

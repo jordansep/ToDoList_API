@@ -38,26 +38,32 @@
       <span class="logo-text">Task<span>Flow</span></span>
     </div>
     
-    <!-- Header Controls (Visible when Logged In) -->
-    <div id="header-user-controls" class="header-user-controls hidden">
-      <div class="user-badge" id="user-profile-trigger">
-        <div class="user-avatar" id="user-avatar-initials">U</div>
-        <div class="user-info-text">
-          <span class="user-display-name" id="user-display-name">Usuario</span>
-          <span class="user-display-role" id="user-display-role">Normal</span>
+    <div class="header-right-controls">
+      <button id="btn-theme-toggle" class="theme-toggle-btn" title="Alternar tema oscuro">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+
+      <!-- Header Controls (Visible when Logged In) -->
+      <div id="header-user-controls" class="header-user-controls hidden">
+        <div class="user-badge" id="user-profile-trigger">
+          <div class="user-avatar" id="user-avatar-initials">U</div>
+          <div class="user-info-text">
+            <span class="user-display-name" id="user-display-name">Usuario</span>
+            <span class="user-display-role" id="user-display-role">Normal</span>
+          </div>
+          <i class="fa-solid fa-chevron-down user-chevron"></i>
         </div>
-        <i class="fa-solid fa-chevron-down user-chevron"></i>
-      </div>
-      
-      <!-- Dropdown Menu -->
-      <div class="user-dropdown" id="user-dropdown-menu">
-        <button id="btn-open-profile" class="dropdown-item">
-          <i class="fa-solid fa-user-gear"></i> Mi Perfil
-        </button>
-        <div class="dropdown-divider"></div>
-        <button id="btn-logout" class="dropdown-item logout-item">
-          <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
-        </button>
+        
+        <!-- Dropdown Menu -->
+        <div class="user-dropdown" id="user-dropdown-menu">
+          <button id="btn-open-profile" class="dropdown-item">
+            <i class="fa-solid fa-user-gear"></i> Mi Perfil
+          </button>
+          <div class="dropdown-divider"></div>
+          <button id="btn-logout" class="dropdown-item logout-item">
+            <i class="fa-solid fa-right-from-bracket"></i> Cerrar Sesión
+          </button>
+        </div>
       </div>
     </div>
   </header>
